@@ -1,0 +1,17 @@
+.radio-button {
+  background: #ddd;
+  cursor: pointer;
+  border: 3px solid #ccc;
+  border-radius: 3px;
+  padding: .5rem 1rem;
+
+  &__label {
+    font-size: 18px;
+    color: #333;
+  }
+
+  &--selected {
+    background: cadetblue;
+    border-color: darkcyan;
+  }
+}

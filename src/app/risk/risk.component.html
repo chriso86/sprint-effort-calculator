@@ -1,0 +1,23 @@
+<div fxLayout="column">
+  <h3>
+    Risk
+  </h3>
+
+  <div fxLayout="row" fxLayoutGap="1rem">
+    <app-radio-button
+      *ngFor="let option of options"
+      [model]="risk"
+      [option]="option"
+      (modelChange)="change.emit($event)">
+    </app-radio-button>
+  </div>
+
+  <div
+    *ngIf="risk"
+    fxLayout="column">
+    <span
+      *ngFor="let descriptiveItem of risk.descriptiveItems">
+      {{descriptiveItem}}
+    </span>
+  </div>
+</div>

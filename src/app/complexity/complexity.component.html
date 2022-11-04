@@ -1,0 +1,23 @@
+<div fxLayout="column">
+  <h3>
+    Complexity
+  </h3>
+
+  <div fxLayout="row" fxLayoutGap="1rem">
+    <app-radio-button
+      *ngFor="let option of options"
+      [model]="complexity"
+      [option]="option"
+      (modelChange)="setComplexity($event)">
+    </app-radio-button>
+  </div>
+
+  <div
+    *ngIf="complexity"
+    fxLayout="column">
+    <span
+      *ngFor="let descriptiveItem of complexity.descriptiveItems">
+      {{descriptiveItem}}
+    </span>
+  </div>
+</div>

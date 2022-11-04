@@ -1,0 +1,11 @@
+<div
+  class="radio-button"
+  [ngClass]="{'radio-button--selected': option.value === model?.value}"
+  (click)="modelChange.emit(option)">
+  <span class="radio-button__label">
+    {{option.label}}
+  </span>
+</div>
+
+<pre>Option value {{option.value}}</pre>
+<pre>Model value {{model?.value}}</pre>

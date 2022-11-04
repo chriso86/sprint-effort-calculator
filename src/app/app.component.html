@@ -1,0 +1,39 @@
+<h1> Sprint effort calculator </h1>
+
+<div fxLayout="row" fxLayoutGap="2rem">
+  <div class="app-section">
+    <app-complexity
+      [complexity]="complexity"
+      (change)="setComplexity($event)">
+    </app-complexity>
+  </div>
+
+  <div class="app-section">
+    <app-workload
+      [workload]="workload"
+      (change)="setWorkload($event)">
+    </app-workload>
+  </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="2rem">
+  <div class="app-section">
+    <app-risk
+      [risk]="risk"
+      (change)="setRisk($event)">
+    </app-risk>
+  </div>
+
+  <div class="app-section">
+    <app-uncertainty
+      [uncertainty]="uncertainty"
+      (change)="setUncertainty($event)">
+    </app-uncertainty>
+  </div>
+</div>
+
+<div class="app-section">
+  <app-score
+    [score]="score">
+  </app-score>
+</div>

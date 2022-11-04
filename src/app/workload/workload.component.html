@@ -1,0 +1,23 @@
+<div fxLayout="column">
+  <h3>
+    Workload
+  </h3>
+
+  <div fxLayout="row" fxLayoutGap="1rem">
+    <app-radio-button
+      *ngFor="let option of options"
+      [model]="workload"
+      [option]="option"
+      (modelChange)="change.emit($event)">
+    </app-radio-button>
+  </div>
+
+  <div
+    *ngIf="workload"
+    fxLayout="column">
+    <span
+      *ngFor="let descriptiveItem of workload.descriptiveItems">
+      {{descriptiveItem}}
+    </span>
+  </div>
+</div>
