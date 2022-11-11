@@ -1,0 +1,23 @@
+.advanced-settings {
+  &__toggle {
+    background: #eee;
+    padding: .5rem 1rem;
+    border: 3px solid #ddd;
+    border-radius: 3px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+
+    &--open {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  &__content {
+    padding: 1em;
+
+    .invalid-text {
+      color: red;
+    }
+  }
+}

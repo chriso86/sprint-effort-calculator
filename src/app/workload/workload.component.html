@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <h3>
-    Workload
+    Amount of Work
   </h3>
 
   <div fxLayout="row" fxLayoutGap="1rem">
@@ -14,7 +14,8 @@
 
   <div
     *ngIf="workload"
-    fxLayout="column">
+    fxLayout="column"
+    class="descriptive-items">
     <span
       *ngFor="let descriptiveItem of workload.descriptiveItems">
       {{descriptiveItem}}

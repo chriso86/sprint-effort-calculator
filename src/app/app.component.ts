@@ -1,4 +1,4 @@
-import {Component, OnChanges, SimpleChanges} from '@angular/core';
+import {Component} from '@angular/core';
 import {IRadioOption} from "../shared/radio-button/radio-option";
 
 @Component({
@@ -12,6 +12,32 @@ export class AppComponent {
   public risk?: IRadioOption;
   public uncertainty?: IRadioOption;
   public score?: number;
+  public isAdvancedSettingsOpen = false;
+  public weightings = {
+    complexity: 25,
+    workload: 25,
+    risk: 25,
+    uncertainty: 25
+  };
+  public effort = {
+    lowest: 1,
+    highest: 13
+  };
+
+  private fibonnaciSequence: number[] = [];
+
+  constructor() {
+    this.fibonnaciSequence = this.getFibonacciNumbers();
+  }
+
+  public get totalWeightedPercentage(): number {
+    const weightings = this.weightings;
+
+    return (weightings.complexity * 0.01)
+      + (weightings.workload * 0.01)
+      + (weightings.risk * 0.01)
+      + (weightings.uncertainty * 0.01)
+  }
 
   public setComplexity(option: IRadioOption) {
     this.complexity = option;
@@ -81,5 +107,85 @@ export class AppComponent {
 
       this.score = 1;
     }
+  }
+
+  public downLowestSprintStep(event: Event) {
+    this.preventAll(event);
+
+    const currentFibonacciValue = this.effort.lowest;
+    const lowestValue = 1;
+
+    if (currentFibonacciValue <= lowestValue) {
+      this.effort.lowest = lowestValue;
+    } else {
+      const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) + 1];
+
+      this.effort.lowest = nextValue - currentFibonacciValue;
+    }
+  }
+
+  public upLowestSprintStep(event: Event) {
+    this.preventAll(event);
+
+    const currentFibonacciValue = this.effort.lowest;
+    const highestValue = this.fibonnaciSequence[this.fibonnaciSequence.length - 1];
+
+    requestAnimationFrame(() => {
+      if (currentFibonacciValue >= highestValue) {
+        this.effort.lowest = highestValue;
+      } else {
+        const lastValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) - 1];
+
+        this.effort.lowest = lastValue + currentFibonacciValue;
+      }
+    })
+  }
+
+  public downHighestSprintStep(event: Event) {
+    this.preventAll(event);
+
+    const currentFibonacciValue = this.effort.highest;
+    const lowestValue = 1;
+
+    if (currentFibonacciValue <= lowestValue) {
+      this.effort.highest = lowestValue;
+    } else {
+      const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) + 1];
+
+      this.effort.highest = nextValue - currentFibonacciValue;
+    }
+  }
+
+  public upHighestSprintStep(event: Event) {
+    this.preventAll(event);
+
+    const currentFibonacciValue = this.effort.highest;
+    const highestValue = this.fibonnaciSequence[this.fibonnaciSequence.length - 1];
+
+    if (currentFibonacciValue >= highestValue) {
+      this.effort.lowest = highestValue;
+    } else {
+      const lastValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) - 1];
+
+      this.effort.lowest = lastValue + currentFibonacciValue;
+    }
+  }
+
+  private preventAll(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  private getFibonacciNumbers() {
+    const numbers = [1, 1];
+    const upperCalculationLimit = 10; // Increment 100 times
+    let j = 1;
+
+    while (j <= upperCalculationLimit) {
+      numbers.push(numbers[j - 1] + numbers[j]);
+      j++;
+    }
+
+    return numbers;
   }
 }

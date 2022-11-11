@@ -1,39 +1,201 @@
-<h1> Sprint effort calculator </h1>
+<div fxLayout="column" fxLayoutAlign="center center">
+  <h1> Sprint effort calculator </h1>
 
-<div fxLayout="row" fxLayoutGap="2rem">
-  <div class="app-section">
-    <app-complexity
-      [complexity]="complexity"
-      (change)="setComplexity($event)">
-    </app-complexity>
+  <div fxLayout="row" fxLayoutGap="2rem">
+    <div class="app-section">
+      <app-complexity
+        [complexity]="complexity"
+        (change)="setComplexity($event)">
+      </app-complexity>
+    </div>
+
+    <div class="app-section">
+      <app-workload
+        [workload]="workload"
+        (change)="setWorkload($event)">
+      </app-workload>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="2rem">
+    <div class="app-section">
+      <app-risk
+        [risk]="risk"
+        (change)="setRisk($event)">
+      </app-risk>
+    </div>
+
+    <div class="app-section">
+      <app-uncertainty
+        [uncertainty]="uncertainty"
+        (change)="setUncertainty($event)">
+      </app-uncertainty>
+    </div>
   </div>
 
   <div class="app-section">
-    <app-workload
-      [workload]="workload"
-      (change)="setWorkload($event)">
-    </app-workload>
-  </div>
-</div>
-
-<div fxLayout="row" fxLayoutGap="2rem">
-  <div class="app-section">
-    <app-risk
-      [risk]="risk"
-      (change)="setRisk($event)">
-    </app-risk>
+    <app-score
+      [score]="score">
+    </app-score>
   </div>
 
-  <div class="app-section">
-    <app-uncertainty
-      [uncertainty]="uncertainty"
-      (change)="setUncertainty($event)">
-    </app-uncertainty>
-  </div>
-</div>
+  <div fxLayout="column" class="advanced-settings">
+    <div
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      class="advanced-settings__toggle"
+      [ngClass]="{'advanced-settings__toggle--open': isAdvancedSettingsOpen}"
+      (click)="isAdvancedSettingsOpen = !isAdvancedSettingsOpen">
+      <span fxFlex="1 1 auto"> Advanced Settings </span>
 
-<div class="app-section">
-  <app-score
-    [score]="score">
-  </app-score>
+      <span *ngIf="!isAdvancedSettingsOpen" class="material-icons">keyboard_arrow_down</span>
+      <span *ngIf="isAdvancedSettingsOpen" class="material-icons">keyboard_arrow_up</span>
+    </div>
+
+    <div *ngIf="isAdvancedSettingsOpen" fxLayout="column" fxLayoutGap="1em" class="advanced-settings__content">
+      <h4 [ngClass]="{'invalid-text': totalWeightedPercentage !== 1}">Weightings ({{totalWeightedPercentage | percent}})</h4>
+
+      <div
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap=".5em">
+        <div fxLayout="column" fxLayoutGap=".5em">
+          <!-- Complexity Weighting -->
+          <div fxLayout="row" fxLayoutAlign="end center" class="form-group">
+            <label
+              fxFlex="1 1 auto"
+              for="complexityWeighting"
+              class="form-group__label">
+              Complexity
+            </label>
+
+            <div class="form-group__add-on">
+              <input
+                type="number"
+                fxFlex="0 0 auto"
+                id="complexityWeighting"
+                class="form-group__input"
+                [(ngModel)]="weightings.complexity">
+
+              <div class="form-group__add-on--suffix"> % </div>
+            </div>
+          </div>
+
+          <!-- Workload Weighting -->
+          <div fxLayout="row" fxLayoutAlign="end center" class="form-group">
+            <label
+              fxFlex="1 1 auto"
+              for="workloadWeighting"
+              class="form-group__label">
+              Amount of Work
+            </label>
+
+            <div class="form-group__add-on">
+              <input
+                type="number"
+                fxFlex="0 0 auto"
+                id="workloadWeighting"
+                class="form-group__input"
+                [(ngModel)]="weightings.workload">
+
+              <div class="form-group__add-on--suffix"> % </div>
+            </div>
+          </div>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap=".5em">
+          <!-- Risk Weighting -->
+          <div fxLayout="row" fxLayoutAlign="end center" class="form-group">
+            <label
+              fxFlex="1 1 auto"
+              for="riskWeighting"
+              class="form-group__label">
+              Degree of Risk
+            </label>
+
+            <div class="form-group__add-on">
+              <input
+                type="number"
+                fxFlex="0 0 auto"
+                id="riskWeighting"
+                class="form-group__input"
+                [(ngModel)]="weightings.risk">
+
+              <div class="form-group__add-on--suffix"> % </div>
+            </div>
+          </div>
+
+          <!-- Uncertainty Weighting -->
+          <div fxLayout="row" fxLayoutAlign="end center" class="form-group">
+            <label
+              fxFlex="1 1 auto"
+              for="uncertaintyWeighting"
+              class="form-group__label">
+              Level of Uncertainty
+            </label>
+
+            <div class="form-group__add-on">
+              <input
+                type="number"
+                fxFlex="0 0 auto"
+                id="uncertaintyWeighting"
+                class="form-group__input"
+                [(ngModel)]="weightings.uncertainty">
+
+              <div class="form-group__add-on--suffix"> % </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h4 [ngClass]="{'invalid-text': effort.lowest < 1 || effort.highest < 1}">Sprint Settings</h4>
+
+      <div
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap=".5em">
+        <!-- Lowest effort -->
+        <div fxLayout="row" fxLayoutAlign="end center" class="form-group">
+          <label
+            fxFlex="1 1 auto"
+            for="complexityWeighting"
+            class="form-group__label">
+            Lowest effort
+          </label>
+
+          <input
+            (keydown.arrowDown)="downLowestSprintStep($event)"
+            (keydown.arrowUp)="upLowestSprintStep($event)"
+            type="number"
+            fxFlex="0 0 auto"
+            id="lowestEffort"
+            class="form-group__input"
+            [(ngModel)]="effort.lowest">
+        </div>
+
+        <!-- Highest effort -->
+        <div fxLayout="row" fxLayoutAlign="end center" class="form-group">
+          <label
+            fxFlex="1 1 auto"
+            for="workloadWeighting"
+            class="form-group__label">
+            Highest effort
+          </label>
+
+          <input
+            (keydown.arrowDown)="downHighestSprintStep($event)"
+            (keydown.arrowUp)="upHighestSprintStep($event)"
+            type="number"
+            fxFlex="0 0 auto"
+            id="highestEffort"
+            class="form-group__input"
+            [(ngModel)]="effort.highest">
+        </div>
+      </div>
+
+      <div *ngIf="effort.highest > 13" class="invalid-text">
+        You should consider breaking tasks into smaller pieces
+      </div>
+    </div>
+  </div>
 </div>

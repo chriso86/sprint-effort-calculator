@@ -13,5 +13,9 @@
   &--selected {
     background: cadetblue;
     border-color: darkcyan;
+
+    .radio-button__label {
+      color: #fff;
+    }
   }
 }

@@ -1,0 +1,35 @@
+.form-group {
+  &__label {
+    width: 155px;
+    padding: 0 1em;
+    text-align: right;
+    color: #333;
+  }
+
+  &__input {
+    padding: .5rem 1rem;
+    border: 3px solid #ddd;
+    border-radius: 3px;
+
+    + .form-group__add-on--suffix {
+      border-left: none !important;
+    }
+
+    &[type=number] {
+      max-width: 70px;
+    }
+  }
+
+  &__add-on {
+    input {
+      border-radius: 3px 0 0 3px;
+    }
+
+    &--suffix {
+      background: #eee;
+      padding: .5rem;
+      border: 3px solid #ddd;
+      border-radius: 0 3px 3px 0;
+    }
+  }
+}

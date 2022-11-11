@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <h3>
-    Risk
+    Degree of Risk
   </h3>
 
   <div fxLayout="row" fxLayoutGap="1rem">
@@ -14,7 +14,8 @@
 
   <div
     *ngIf="risk"
-    fxLayout="column">
+    fxLayout="column"
+    class="descriptive-items">
     <span
       *ngFor="let descriptiveItem of risk.descriptiveItems">
       {{descriptiveItem}}

@@ -14,7 +14,8 @@
 
   <div
     *ngIf="complexity"
-    fxLayout="column">
+    fxLayout="column"
+    class="descriptive-items">
     <span
       *ngFor="let descriptiveItem of complexity.descriptiveItems">
       {{descriptiveItem}}
