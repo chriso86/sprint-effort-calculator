@@ -9,6 +9,7 @@ import {ScaleEnum} from "../core/scale.enum";
 })
 export class UncertaintyComponent implements OnInit {
   @Input() uncertainty?: IRadioOption;
+  @Input() disabled: boolean = false;
 
   @Output() change: EventEmitter<IRadioOption> = new EventEmitter<IRadioOption>();
 

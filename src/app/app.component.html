@@ -2,32 +2,36 @@
   <h1> Sprint effort calculator </h1>
 
   <div fxLayout="row" fxLayoutGap="2rem">
-    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.complexity === 0}">
+    <div class="app-section" [ngClass]="{'app-section--disabled': weightings.complexity === 0}">
       <app-complexity
         [complexity]="complexity"
+        [disabled]="weightings.complexity === 0"
         (change)="setComplexity($event)">
       </app-complexity>
     </div>
 
-    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.workload === 0}">
+    <div class="app-section" [ngClass]="{'app-section--disabled': weightings.workload === 0}">
       <app-workload
         [workload]="workload"
+        [disabled]="weightings.workload === 0"
         (change)="setWorkload($event)">
       </app-workload>
     </div>
   </div>
 
   <div fxLayout="row" fxLayoutGap="2rem">
-    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.risk === 0}">
+    <div class="app-section" [ngClass]="{'app-section--disabled': weightings.risk === 0}">
       <app-risk
         [risk]="risk"
+        [disabled]="weightings.risk === 0"
         (change)="setRisk($event)">
       </app-risk>
     </div>
 
-    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.uncertainty === 0}">
+    <div class="app-section" [ngClass]="{'app-section--disabled': weightings.uncertainty === 0}">
       <app-uncertainty
         [uncertainty]="uncertainty"
+        [disabled]="weightings.uncertainty === 0"
         (change)="setUncertainty($event)">
       </app-uncertainty>
     </div>
@@ -54,7 +58,11 @@
 
     <div *ngIf="isAdvancedSettingsOpen" fxLayout="column" fxLayoutGap="1em" class="advanced-settings__content">
       <h4 [ngClass]="{'invalid-text': totalWeightedPercentage !== 1}">
-        Weightings ({{totalWeightedPercentage | percent}})
+        Weightings (
+          <ng-container *ngIf="totalWeightedPercentage === 1">{{totalWeightedPercentage | percent}}</ng-container>
+          <ng-container *ngIf="totalWeightedPercentage !== 1">{{totalWeightedPercentage * 100}}</ng-container>
+          <ng-container *ngIf="totalWeightedPercentage !== 1">/100%</ng-container>
+        )
       </h4>
 
       <div
@@ -73,12 +81,12 @@
 
             <div class="form-group__add-on">
               <input
-                (ngModelChange)="updateModels()"
+                (input)="setComplexityWeighting($event)"
                 type="number"
                 fxFlex="0 0 auto"
                 id="complexityWeighting"
                 class="form-group__input"
-                [(ngModel)]="weightings.complexity">
+                [ngModel]="weightings.complexity">
 
               <div class="form-group__add-on--suffix"> % </div>
             </div>
@@ -95,12 +103,12 @@
 
             <div class="form-group__add-on">
               <input
-                (ngModelChange)="updateModels()"
+                (input)="setWorkloadWeighting($event)"
                 type="number"
                 fxFlex="0 0 auto"
                 id="workloadWeighting"
                 class="form-group__input"
-                [(ngModel)]="weightings.workload">
+                [ngModel]="weightings.workload">
 
               <div class="form-group__add-on--suffix"> % </div>
             </div>
@@ -119,12 +127,12 @@
 
             <div class="form-group__add-on">
               <input
-                (ngModelChange)="updateModels()"
+                (input)="setRiskWeighting($event)"
                 type="number"
                 fxFlex="0 0 auto"
                 id="riskWeighting"
                 class="form-group__input"
-                [(ngModel)]="weightings.risk">
+                [ngModel]="weightings.risk">
 
               <div class="form-group__add-on--suffix"> % </div>
             </div>
@@ -141,12 +149,12 @@
 
             <div class="form-group__add-on">
               <input
-                (ngModelChange)="updateModels()"
+                (input)="setUncertaintyWeighting($event)"
                 type="number"
                 fxFlex="0 0 auto"
                 id="uncertaintyWeighting"
                 class="form-group__input"
-                [(ngModel)]="weightings.uncertainty">
+                [ngModel]="weightings.uncertainty">
 
               <div class="form-group__add-on--suffix"> % </div>
             </div>
@@ -174,12 +182,12 @@
           <input
             (keydown.arrowDown)="downLowestSprintStep($event)"
             (keydown.arrowUp)="upLowestSprintStep($event)"
-            (ngModelChange)="updateModels()"
+            (input)="setLowestEffort($event)"
             type="number"
             fxFlex="0 0 auto"
             id="lowestEffort"
             class="form-group__input"
-            [(ngModel)]="effort.lowest">
+            [ngModel]="effort.lowest">
         </div>
 
         <!-- Highest effort -->
@@ -194,12 +202,12 @@
           <input
             (keydown.arrowDown)="downHighestSprintStep($event)"
             (keydown.arrowUp)="upHighestSprintStep($event)"
-            (ngModelChange)="updateModels()"
+            (input)="setHighestEffort($event)"
             type="number"
             fxFlex="0 0 auto"
             id="highestEffort"
             class="form-group__input"
-            [(ngModel)]="effort.highest">
+            [ngModel]="effort.highest">
         </div>
       </div>
 

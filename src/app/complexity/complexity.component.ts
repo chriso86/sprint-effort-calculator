@@ -9,6 +9,7 @@ import {ScaleEnum} from "../core/scale.enum";
 })
 export class ComplexityComponent implements OnInit {
   @Input() complexity?: IRadioOption;
+  @Input() disabled: boolean = false;
 
   @Output() change: EventEmitter<IRadioOption> = new EventEmitter<IRadioOption>();
 

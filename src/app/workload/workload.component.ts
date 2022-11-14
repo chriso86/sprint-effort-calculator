@@ -9,6 +9,7 @@ import {ScaleEnum} from "../core/scale.enum";
 })
 export class WorkloadComponent implements OnInit {
   @Input() workload?: IRadioOption;
+  @Input() disabled: boolean = false;
 
   @Output() change: EventEmitter<IRadioOption> = new EventEmitter<IRadioOption>();
 
