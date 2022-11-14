@@ -2,14 +2,14 @@
   <h1> Sprint effort calculator </h1>
 
   <div fxLayout="row" fxLayoutGap="2rem">
-    <div class="app-section">
+    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.complexity === 0}">
       <app-complexity
         [complexity]="complexity"
         (change)="setComplexity($event)">
       </app-complexity>
     </div>
 
-    <div class="app-section">
+    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.workload === 0}">
       <app-workload
         [workload]="workload"
         (change)="setWorkload($event)">
@@ -18,14 +18,14 @@
   </div>
 
   <div fxLayout="row" fxLayoutGap="2rem">
-    <div class="app-section">
+    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.risk === 0}">
       <app-risk
         [risk]="risk"
         (change)="setRisk($event)">
       </app-risk>
     </div>
 
-    <div class="app-section">
+    <div class="app-section" [ngClass]="{'app-section--disabled': state.weightings.uncertainty === 0}">
       <app-uncertainty
         [uncertainty]="uncertainty"
         (change)="setUncertainty($event)">
@@ -53,7 +53,9 @@
     </div>
 
     <div *ngIf="isAdvancedSettingsOpen" fxLayout="column" fxLayoutGap="1em" class="advanced-settings__content">
-      <h4 [ngClass]="{'invalid-text': totalWeightedPercentage !== 1}">Weightings ({{totalWeightedPercentage | percent}})</h4>
+      <h4 [ngClass]="{'invalid-text': totalWeightedPercentage !== 1}">
+        Weightings ({{totalWeightedPercentage | percent}})
+      </h4>
 
       <div
         fxLayout="row"
@@ -71,6 +73,7 @@
 
             <div class="form-group__add-on">
               <input
+                (ngModelChange)="updateModels()"
                 type="number"
                 fxFlex="0 0 auto"
                 id="complexityWeighting"
@@ -92,6 +95,7 @@
 
             <div class="form-group__add-on">
               <input
+                (ngModelChange)="updateModels()"
                 type="number"
                 fxFlex="0 0 auto"
                 id="workloadWeighting"
@@ -115,6 +119,7 @@
 
             <div class="form-group__add-on">
               <input
+                (ngModelChange)="updateModels()"
                 type="number"
                 fxFlex="0 0 auto"
                 id="riskWeighting"
@@ -136,6 +141,7 @@
 
             <div class="form-group__add-on">
               <input
+                (ngModelChange)="updateModels()"
                 type="number"
                 fxFlex="0 0 auto"
                 id="uncertaintyWeighting"
@@ -148,7 +154,9 @@
         </div>
       </div>
 
-      <h4 [ngClass]="{'invalid-text': effort.lowest < 1 || effort.highest < 1}">Sprint Settings</h4>
+      <h4 [ngClass]="{'invalid-text': effort.lowest < 1 || effort.highest < 1}">
+        Sprint Settings
+      </h4>
 
       <div
         fxLayout="row"
@@ -166,6 +174,7 @@
           <input
             (keydown.arrowDown)="downLowestSprintStep($event)"
             (keydown.arrowUp)="upLowestSprintStep($event)"
+            (ngModelChange)="updateModels()"
             type="number"
             fxFlex="0 0 auto"
             id="lowestEffort"
@@ -185,6 +194,7 @@
           <input
             (keydown.arrowDown)="downHighestSprintStep($event)"
             (keydown.arrowUp)="upHighestSprintStep($event)"
+            (ngModelChange)="updateModels()"
             type="number"
             fxFlex="0 0 auto"
             id="highestEffort"

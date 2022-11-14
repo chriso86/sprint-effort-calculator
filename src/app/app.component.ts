@@ -1,5 +1,9 @@
 import {Component} from '@angular/core';
 import {IRadioOption} from "../shared/radio-button/radio-option";
+import {Store} from "@ngxs/store";
+import {UpdateSettings} from "./core/app.actions";
+import {IAppSettings} from "./core/app-settings.interface";
+import {LocalStorageHelper} from "./core/local-storage.helper";
 
 @Component({
   selector: 'app-root',
@@ -13,25 +17,27 @@ export class AppComponent {
   public uncertainty?: IRadioOption;
   public score?: number;
   public isAdvancedSettingsOpen = false;
-  public weightings = {
-    complexity: 25,
-    workload: 25,
-    risk: 25,
-    uncertainty: 25
-  };
-  public effort = {
-    lowest: 1,
-    highest: 13
-  };
+  public state!: IAppSettings;
 
-  private fibonnaciSequence: number[] = [];
+  private readonly fibonnaciSequence: number[] = [];
 
-  constructor() {
+  constructor(
+    private store: Store
+  ) {
+    const savedSettings = LocalStorageHelper.GetItem<IAppSettings>('settings');
+
+    this.store.select(s => this.state = s.app);
     this.fibonnaciSequence = this.getFibonacciNumbers();
+
+    console.log(savedSettings, 'SAVED SETTINGS');
+
+    if (savedSettings) {
+      this.updateAppSettings(savedSettings);
+    }
   }
 
   public get totalWeightedPercentage(): number {
-    const weightings = this.weightings;
+    const weightings = this.state.weightings;
 
     return (weightings.complexity * 0.01)
       + (weightings.workload * 0.01)
@@ -60,83 +66,96 @@ export class AppComponent {
   }
 
   public updateScore(): void {
-    if (this.complexity && this.workload && this.risk && this.uncertainty) {
-      const mappings = {
-        1: 1,
-        2: 2,
-        3: 3,
-        4: 5,
-        5: 8
-      };
-      const getMapping = (value: any): number => {
-        // @ts-ignore
-        return mappings[value];
-      }
-
-      const complexityValue = getMapping(this.complexity.data);
-      const workloadValue = getMapping(this.workload.data);
-      const riskValue = getMapping(this.risk.data);
-      const uncertaintyValue = getMapping(this.uncertainty.data);
-      const values = [
-        complexityValue,
-        workloadValue,
-        riskValue,
-        uncertaintyValue
-      ];
-      const average = values.reduce((a, b) => a + b, 0) / values.length;
-
-      if (average > 1.5 && average <= 3) {
-        this.score = 3;
+    requestAnimationFrame(() => {
+      if (this.totalWeightedPercentage !== 1) {
         return;
       }
 
-      if (average > 3 && average <= 5) {
-        this.score = 5;
-        return;
-      }
+      if (this.complexity && this.workload && this.risk && this.uncertainty) {
+        const complexityValue = this.complexity.data * (this.state.weightings.complexity / 100);
+        const workloadValue = this.workload.data * (this.state.weightings.workload / 100);
+        const riskValue = this.risk.data * (this.state.weightings.risk / 100);
+        const uncertaintyValue = this.uncertainty.data * (this.state.weightings.uncertainty / 100);
+        const score = complexityValue + workloadValue + riskValue + uncertaintyValue;
+        const lowestScore = this.state.effort.lowest;
+        const highestScore = this.state.effort.highest;
+        const lowestScoreIndex = this.fibonnaciSequence.indexOf(lowestScore);
+        const highestScoreIndex = this.fibonnaciSequence.indexOf(highestScore);
+        const limitedSequence = this.fibonnaciSequence.slice(lowestScoreIndex, highestScoreIndex + 1); // Slice removes just before the last index
+        const increment = 5 / limitedSequence.length; // We have 5 levels of measure
+        let index = 0;
+        const mappings = limitedSequence.reduce((memo: Map<number, number>, item: number) => {
+          memo.set(+index.toFixed(1), item);
+          index = index + increment;
 
-      if (average > 5 && average <= 8) {
-        this.score = 8;
-        return;
-      }
+          return memo;
+        }, new Map<number, number>());
+        const rangeIndexes = [
+          ...Array.from(mappings.keys()),
+          5
+        ];
+        let correctedScore = +(score * increment).toFixed(1);
 
-      if ((average > 8 && average <= 13) || average > 13) {
-        this.score = 13;
-        return;
-      }
+        correctedScore = (correctedScore === rangeIndexes[1])
+          ? correctedScore - .1
+          : (correctedScore === rangeIndexes[rangeIndexes.length - 2])
+            ? correctedScore + .1
+            : correctedScore;
 
-      this.score = 1;
-    }
+        correctedScore = +correctedScore.toFixed(1);
+
+        const matchingIndex = rangeIndexes.find((rangeIndex: number, arrIndex: number, arr: number[]) => {
+          return correctedScore > rangeIndex && correctedScore <= arr[arrIndex + 1];
+        }) ?? 0;
+
+        console.log(complexityValue, 'COMPLEXITY');
+        console.log(workloadValue, 'WORKLOAD');
+        console.log(riskValue, 'RISK');
+        console.log(uncertaintyValue, 'UNCERTAINTY');
+        console.log(matchingIndex, 'MATCHING INDEX');
+        console.log(rangeIndexes, 'RANGE INDEXES');
+        console.log(lowestScore, 'LOWEST SCORE');
+        console.log(lowestScoreIndex, 'LOWEST SCORE INDEX');
+        console.log(highestScore, 'HIGHEST SCORE');
+        console.log(highestScoreIndex, 'HIGHEST SCORE INDEX');
+        console.log(correctedScore, 'SCORE');
+        console.log(this.fibonnaciSequence, 'WHOLE SEQUENCE');
+        console.log(limitedSequence, 'LIMITED SEQUENCE');
+        console.log(mappings, 'MAPPINGS');
+
+        this.score = mappings.get(matchingIndex);
+      }
+    });
   }
 
   public downLowestSprintStep(event: Event) {
     this.preventAll(event);
 
-    const currentFibonacciValue = this.effort.lowest;
+    const currentFibonacciValue = this.state.effort.lowest;
     const lowestValue = 1;
 
     if (currentFibonacciValue <= lowestValue) {
-      this.effort.lowest = lowestValue;
+      this.state.effort.lowest = lowestValue;
     } else {
       const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) + 1];
 
-      this.effort.lowest = nextValue - currentFibonacciValue;
+      this.state.effort.lowest = nextValue - currentFibonacciValue;
     }
   }
 
   public upLowestSprintStep(event: Event) {
     this.preventAll(event);
 
-    const currentFibonacciValue = this.effort.lowest;
+    const currentFibonacciValue = this.state.effort.lowest;
     const highestValue = this.fibonnaciSequence[this.fibonnaciSequence.length - 1];
 
     requestAnimationFrame(() => {
       if (currentFibonacciValue >= highestValue) {
-        this.effort.lowest = highestValue;
+        this.state.effort.lowest = highestValue;
       } else {
         const lastValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) - 1];
 
-        this.effort.lowest = lastValue + currentFibonacciValue;
+        this.state.effort.lowest = lastValue + currentFibonacciValue;
       }
     })
   }
@@ -144,30 +163,30 @@ export class AppComponent {
   public downHighestSprintStep(event: Event) {
     this.preventAll(event);
 
-    const currentFibonacciValue = this.effort.highest;
+    const currentFibonacciValue = this.state.effort.highest;
     const lowestValue = 1;
 
     if (currentFibonacciValue <= lowestValue) {
-      this.effort.highest = lowestValue;
+      this.state.effort.highest = lowestValue;
     } else {
       const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) + 1];
 
-      this.effort.highest = nextValue - currentFibonacciValue;
+      this.state.effort.highest = nextValue - currentFibonacciValue;
     }
   }
 
   public upHighestSprintStep(event: Event) {
     this.preventAll(event);
 
-    const currentFibonacciValue = this.effort.highest;
+    const currentFibonacciValue = this.state.effort.highest;
     const highestValue = this.fibonnaciSequence[this.fibonnaciSequence.length - 1];
 
     if (currentFibonacciValue >= highestValue) {
-      this.effort.lowest = highestValue;
+      this.state.effort.lowest = highestValue;
     } else {
       const lastValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) - 1];
 
-      this.effort.lowest = lastValue + currentFibonacciValue;
+      this.state.effort.lowest = lastValue + currentFibonacciValue;
     }
   }
 
@@ -186,6 +205,22 @@ export class AppComponent {
       j++;
     }
 
+    numbers.shift(); // Remove the duplicate 1
+
     return numbers;
+  }
+
+  public updateModels() {
+    requestAnimationFrame(() => {
+      this.updateAppSettings({
+        weightings: this.state.weightings,
+        effort: this.state.effort
+      });
+      this.updateScore();
+    });
+  }
+
+  private updateAppSettings(settings: IAppSettings) {
+    this.store.dispatch(new UpdateSettings(settings));
   }
 }

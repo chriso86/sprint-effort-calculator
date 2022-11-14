@@ -55,7 +55,9 @@ export class UncertaintyComponent implements OnInit {
   }];
 
   public ngOnInit(): void {
-    this.setUncertainty(this.options[0]);
+    requestAnimationFrame(() => {
+      this.setUncertainty(this.options[0]);
+    });
   }
 
   public setUncertainty(option: IRadioOption) {

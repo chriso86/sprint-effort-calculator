@@ -15,8 +15,18 @@
       border-left: none !important;
     }
 
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
     &[type=number] {
       max-width: 70px;
+
+      /* Firefox - remove stepper */
+      -moz-appearance: textfield;
     }
   }
 

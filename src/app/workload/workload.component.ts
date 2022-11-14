@@ -47,7 +47,7 @@ export class WorkloadComponent implements OnInit {
   }, {
     label: 'Extreme',
     value: ScaleEnum.extreme,
-    data: 4,
+    data: 5,
     descriptiveItems: [
       'Extreme effort and concentration required to complete the work',
       'A very large amount of work needs to be completed'
@@ -55,7 +55,9 @@ export class WorkloadComponent implements OnInit {
   }];
 
   public ngOnInit(): void {
-    this.setWorkload(this.options[0]);
+    requestAnimationFrame(() => {
+      this.setWorkload(this.options[0]);
+    });
   }
 
   public setWorkload(option: IRadioOption) {

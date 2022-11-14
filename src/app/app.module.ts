@@ -11,6 +11,9 @@ import {SharedModule} from "../shared/shared.module";
 import {FlexModule} from "@angular/flex-layout";
 import { ScoreComponent } from './score/score.component';
 import {FormsModule} from "@angular/forms";
+import {NgxsModule} from "@ngxs/store";
+import {environment} from "../environments/environment";
+import {AppState} from "./core/app.state";
 
 @NgModule({
   declarations: [
@@ -27,7 +30,10 @@ import {FormsModule} from "@angular/forms";
     BrowserAnimationsModule,
     SharedModule,
     FlexModule,
-    FormsModule
+    FormsModule,
+    NgxsModule.forRoot([AppState], {
+      developmentMode: !environment.production
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

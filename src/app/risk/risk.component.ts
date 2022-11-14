@@ -55,7 +55,9 @@ export class RiskComponent implements OnInit {
   }];
 
   public ngOnInit(): void {
-    this.setRisk(this.options[0]);
+    requestAnimationFrame(() => {
+      this.setRisk(this.options[0]);
+    });
   }
 
   public setRisk(option: IRadioOption) {

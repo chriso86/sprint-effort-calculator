@@ -60,7 +60,9 @@ export class ComplexityComponent implements OnInit {
   }];
 
   public ngOnInit(): void {
-    this.setComplexity(this.options[0]);
+    requestAnimationFrame(() => {
+      this.setComplexity(this.options[0]);
+    });
   }
 
   public setComplexity(option: IRadioOption) {
