@@ -1,1 +1,188 @@
-<h3>Effort: {{score}}</h3>
+<div fxLayout="row" fxLayoutAlign="center center">
+  <h3 fxFlex="1 1 auto">
+    Effort: {{score}}
+  </h3>
+
+  <span
+    *ngIf="!isAdvancedScore"
+    (click)="isAdvancedScore = true"
+    class="advanced-score__link"
+    fxLayout="row"
+    fxLayoutAlign="center center">
+    <span class="material-icons">keyboard_arrow_down</span>
+    Show Advanced Score
+  </span>
+
+  <span
+    *ngIf="isAdvancedScore"
+    (click)="isAdvancedScore = false"
+    class="advanced-score__link"
+    fxLayout="row"
+    fxLayoutAlign="center center">
+    <span class="material-icons">keyboard_arrow_up</span>
+    Show Basic Score
+  </span>
+</div>
+
+<div *ngIf="isAdvancedScore" class="advanced-score">
+  <table>
+    <thead>
+      <tr>
+        <th>Measure</th>
+        <th>Calculation</th>
+        <th>Explanation</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- Calculated Complexity -->
+      <tr>
+        <td>
+          <strong>cC</strong> (Calculated Complexity)
+        </td>
+        <td>
+          {{calculatedComplexity}}
+          =
+          (
+          <strong [matTooltip]="'Complexity: ' + complexity!" class="tooltip">c</strong>
+          x
+          (
+          <strong [matTooltip]="'Complexity Weighting: ' + ((weightings$ | async)?.complexity)" class="tooltip">wC</strong>
+          ÷
+          100
+          )
+          )
+        </td>
+        <td>
+          Complexity balanced value using base choice value (1 to 5) and weighting
+        </td>
+      </tr>
+
+      <!-- Calculated Workload -->
+      <tr>
+        <td>
+          <strong>cW</strong> (Calculated Workload)
+        </td>
+        <td>
+          {{calculatedWorkload}}
+          =
+          (
+          <strong [matTooltip]="'Workload: ' + workload!" class="tooltip">w</strong>
+          x
+          (
+          <strong [matTooltip]="'Workload Weighting: ' + ((weightings$ | async)?.workload)" class="tooltip">wW</strong>
+          ÷
+          100
+          )
+          )
+        </td>
+        <td>
+          Workload balanced value using base choice value (1 to 5) and weighting
+        </td>
+      </tr>
+
+      <!-- Calculated Risk -->
+      <tr>
+        <td>
+          <strong>cR</strong> (Calculated Risk)
+        </td>
+        <td>
+          {{calculatedRisk}}
+          =
+          (
+          <strong [matTooltip]="'Risk: ' + risk!" class="tooltip">r</strong>
+          x
+          (
+          <strong [matTooltip]="'Risk Weighting: ' + ((weightings$ | async)?.risk)" class="tooltip">wR</strong>
+          ÷
+          100
+          )
+          )
+        </td>
+        <td>
+          Risk balanced value using base choice value (1 to 5) and weighting
+        </td>
+      </tr>
+
+      <!-- Calculated Uncertainty -->
+      <tr>
+        <td>
+          <strong>cU</strong> (Calculated Uncertainty)
+        </td>
+        <td>
+          {{calculatedUncertainty}}
+          =
+          (
+          <strong [matTooltip]="'Uncertainty: ' + uncertainty!" class="tooltip">u</strong>
+          x
+          (
+          <strong [matTooltip]="'Uncertainty Weighting: ' + ((weightings$ | async)?.uncertainty)" class="tooltip">wU</strong>
+          ÷
+          100
+          )
+          )
+        </td>
+        <td>
+          Uncertainty balanced value using base choice value (1 to 5) and weighting
+        </td>
+      </tr>
+
+      <!-- Shortfall -->
+      <tr>
+        <td>
+          <strong>(cT)</strong> Calculated Total
+        </td>
+        <td>
+          {{calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty}}
+          =
+          (
+          <strong [matTooltip]="'Calculated Complexity: ' + calculatedComplexity" class="tooltip">cC</strong>
+          +
+          <strong [matTooltip]="'Calculated Workload: ' + calculatedWorkload" class="tooltip">cW</strong>
+          +
+          <strong [matTooltip]="'Calculated Risk: ' + calculatedRisk" class="tooltip">cR</strong>
+          +
+          <strong [matTooltip]="'Calculated Uncertainty: ' + calculatedUncertainty" class="tooltip">cU</strong>
+          )
+        </td>
+        <td>
+          The sum of all of the calculated values
+        </td>
+      </tr>
+
+      <!-- Shortfall -->
+      <tr>
+        <td>
+          <strong>(bT)</strong> Balanced Total
+        </td>
+        <td>
+          {{(calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty) / 5}}
+          =
+          (
+          <strong [matTooltip]="'Calculated Total: ' + (calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty)" class="tooltip">cT</strong>
+          +
+          <strong matTooltip="The highest selectable option value" class="tooltip">5</strong>
+          )
+        </td>
+        <td>
+          The calculated total balanced against the total number of selectable options
+        </td>
+      </tr>
+
+      <!-- Shortfall -->
+      <tr>
+        <td>
+          <strong>(sM)</strong> Score Mappings
+        </td>
+        <td [innerHTML]="scoreMappingsDescription"></td>
+        <td>
+          <p>The range which we use the balanced total to find the final effort.</p>
+          <p>We use the lowest and highest effort to calculate these ranges.</p>
+          <p>The highest value is always 5, and the ranges are equal between 0 and 5.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+</div>

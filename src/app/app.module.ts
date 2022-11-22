@@ -14,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import {NgxsModule} from "@ngxs/store";
 import {environment} from "../environments/environment";
 import {AppState} from "./core/app.state";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {AppState} from "./core/app.state";
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    MatTooltipModule,
     SharedModule,
     FlexModule,
     FormsModule,

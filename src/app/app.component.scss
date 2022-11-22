@@ -1,20 +1,47 @@
+.modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+.arrow-group {
+  padding: 0 .25em;
+}
+
 .advanced-settings {
+  z-index: 2;
+  position: relative;
+  user-select: none;
+
   &__toggle {
     background: #eee;
     padding: .5rem 1rem;
     border: 3px solid #ddd;
     border-radius: 3px;
-    margin-bottom: 1rem;
     cursor: pointer;
     font-weight: bold;
+  }
 
-    &--open {
-      margin-bottom: 0 !important;
-    }
+  &__close-button {
+    position: absolute;
+    top: .25em;
+    right: .25em;
+    cursor: pointer;
   }
 
   &__content {
-    padding: 1em;
+    position: absolute;
+    top: 41px;
+    right: 0;
+    background: #fff;
+    z-index: 2;
+    padding: 0 1em 1em 1em;
+    border: 3px solid #ddd;
+    border-radius: 3px;
 
     .invalid-text {
       color: red;

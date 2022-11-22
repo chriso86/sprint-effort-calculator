@@ -1,0 +1,33 @@
+.advanced-score {
+  &__link {
+    color: royalblue;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  table {
+    border-spacing: .5em;
+
+    tr {
+      th {
+        text-align: left;
+        padding: .25em;
+      }
+
+      td {
+        padding: .25em;
+        vertical-align: top;
+        border: 3px solid #ddd;
+
+        strong.tooltip {
+          padding: .2rem .5rem;
+          border: 3px solid #ddd;
+          border-radius: 3px;
+          text-decoration: underline;
+          cursor: pointer;
+          color: royalblue;
+        }
+      }
+    }
+  }
+}
