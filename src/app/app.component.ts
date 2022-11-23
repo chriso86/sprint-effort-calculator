@@ -6,6 +6,7 @@ import {IAppSettings, IEffort, IWeightings} from "./core/app-settings.interface"
 import {LocalStorageHelper} from "./core/local-storage.helper";
 import {Observable} from "rxjs";
 import {AppState} from "./core/app.state";
+import version from "../assets/version.json";
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,7 @@ export class AppComponent {
   public weightings!: IWeightings;
   public effort!: IEffort;
   public scoreMappings?: Map<number, number> = new Map<number, number>();
+  public version = version.version;
 
   @Select(AppState.weightings) weightings$!: Observable<IWeightings>;
   @Select(AppState.effort) effort$!: Observable<IEffort>;
@@ -57,28 +59,28 @@ export class AppComponent {
   }
 
   public get calculatedComplexity(): number {
-    return (this.complexity?.data ?? 0) * (this.weightings.complexity / 100);
+    return +((this.complexity?.data ?? 0) * (this.weightings.complexity / 100)).toFixed(2);
   }
 
   public get calculatedWorkload(): number {
-    return (this.workload?.data ?? 0) * (this.weightings.workload / 100);
+    return +((this.workload?.data ?? 0) * (this.weightings.workload / 100)).toFixed(2);
   }
 
   public get calculatedRisk(): number {
-    return (this.risk?.data ?? 0) * (this.weightings.risk / 100);
+    return +((this.risk?.data ?? 0) * (this.weightings.risk / 100)).toFixed(2);
   }
 
   public get calculatedUncertainty(): number {
-    return (this.uncertainty?.data ?? 0) * (this.weightings.uncertainty / 100);
+    return +((this.uncertainty?.data ?? 0) * (this.weightings.uncertainty / 100)).toFixed(2);
   }
 
   public get totalWeightedPercentage(): number {
     const weightings = this.weightings;
 
-    return (weightings.complexity * 0.01)
+    return +((weightings.complexity * 0.01)
       + (weightings.workload * 0.01)
       + (weightings.risk * 0.01)
-      + (weightings.uncertainty * 0.01)
+      + (weightings.uncertainty * 0.01)).toFixed(2);
   }
 
   public setComplexity(option: IRadioOption) {

@@ -24,7 +24,15 @@ export class ScoreComponent {
   @Select(AppState.weightings) weightings$!: Observable<IWeightings>;
   @Select(AppState.effort) effort$!: Observable<IEffort>;
 
-  public isAdvancedScore: boolean = true;
+  public isAdvancedScore: boolean = false;
+
+  public get calculatedTotal(): number {
+    return +(this.calculatedComplexity + this.calculatedWorkload + this.calculatedRisk + this.calculatedUncertainty).toFixed(2);
+  }
+
+  public get balancedTotal(): number {
+    return +((this.calculatedComplexity + this.calculatedWorkload + this.calculatedRisk + this.calculatedUncertainty) / 5).toFixed(2);
+  }
 
   public get scoreMappingsDescription(): string {
     const keys = Array.from(this.scoreMappings?.keys() ?? []);

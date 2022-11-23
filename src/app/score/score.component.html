@@ -133,7 +133,7 @@
           <strong>(cT)</strong> Calculated Total
         </td>
         <td>
-          {{calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty}}
+          {{calculatedTotal}}
           =
           (
           <strong [matTooltip]="'Calculated Complexity: ' + calculatedComplexity" class="tooltip">cC</strong>
@@ -156,7 +156,7 @@
           <strong>(bT)</strong> Balanced Total
         </td>
         <td>
-          {{(calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty) / 5}}
+          {{balancedTotal}}
           =
           (
           <strong [matTooltip]="'Calculated Total: ' + (calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty)" class="tooltip">cT</strong>
