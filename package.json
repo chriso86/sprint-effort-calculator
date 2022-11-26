@@ -1,6 +1,6 @@
 {
   "name": "sprint-effort-calculator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "ng": "ng",
     "run-scripts": "node scripts/generate-version-file.js",
