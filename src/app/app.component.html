@@ -3,7 +3,10 @@
 <div fxLayout="row" fxLayoutAlign="center center">
   <div fxLayout="column" fxLayoutGap="1rem">
     <div fxLayout="row" fxLayoutAlign="center center">
-      <h1 fxFlex="1 1 auto"> Sprint effort calculator </h1>
+      <h1 fxFlex="0 0 auto"> Sprint effort calculator </h1>
+      <div fxFlex="1 1 auto" fxFlexAlign="end" class="version">
+        Version {{version}}
+      </div>
 
       <div fxFlex="0 0 auto" fxLayout="column" fxLayoutAlign="center" class="advanced-settings">
         <!-- Advanced Settings Button -->
@@ -267,7 +270,3 @@
 </div>
 
 <div *ngIf="isAdvancedSettingsOpen" class="modal-bg" (click)="isAdvancedSettingsOpen = false"></div>
-
-<div class="version">
-  Version {{version}}
-</div>
