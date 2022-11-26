@@ -30,8 +30,12 @@ export class ScoreComponent {
     return +(this.calculatedComplexity + this.calculatedWorkload + this.calculatedRisk + this.calculatedUncertainty).toFixed(2);
   }
 
+  public get correctedScore(): number {
+    return +(this.calculatedTotal * this.balancedTotal).toFixed(1);
+  }
+
   public get balancedTotal(): number {
-    return +((this.calculatedComplexity + this.calculatedWorkload + this.calculatedRisk + this.calculatedUncertainty) / 5).toFixed(2);
+    return +(this.calculatedTotal / 5).toFixed(2);
   }
 
   public get scoreMappingsDescription(): string {

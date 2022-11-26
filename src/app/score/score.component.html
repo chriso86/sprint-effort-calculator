@@ -127,7 +127,7 @@
         </td>
       </tr>
 
-      <!-- Shortfall -->
+      <!-- Calculated Total -->
       <tr>
         <td>
           <strong>(cT)</strong> Calculated Total
@@ -150,26 +150,45 @@
         </td>
       </tr>
 
-      <!-- Shortfall -->
+      <!-- Balanced Total -->
       <tr>
         <td>
-          <strong>(bT)</strong> Balanced Total
+          <strong>(bS)</strong> Balanced Score %
         </td>
         <td>
           {{balancedTotal}}
           =
           (
-          <strong [matTooltip]="'Calculated Total: ' + (calculatedComplexity + calculatedWorkload + calculatedRisk + calculatedUncertainty)" class="tooltip">cT</strong>
-          +
-          <strong matTooltip="The highest selectable option value" class="tooltip">5</strong>
+          <strong [matTooltip]="'Calculated Total: ' + calculatedTotal" class="tooltip">cT</strong>
+          ÷
+          5
           )
         </td>
         <td>
-          The calculated total balanced against the total number of selectable options
+          The calculated sum balanced to find the score percentage
         </td>
       </tr>
 
-      <!-- Shortfall -->
+      <!-- Balanced Total -->
+      <tr>
+        <td>
+          <strong>(cS)</strong> Corrected Score
+        </td>
+        <td>
+          {{correctedScore}}
+          =
+          (
+          <strong [matTooltip]="'Calculated Total: ' + calculatedTotal" class="tooltip">cT</strong>
+          x
+          <strong [matTooltip]="'Balanced Total: ' + balancedTotal" class="tooltip">bT</strong>
+          )
+        </td>
+        <td>
+          The final score aggregation balanced against the score % to get a value out of 5
+        </td>
+      </tr>
+
+      <!-- Score Mappings -->
       <tr>
         <td>
           <strong>(sM)</strong> Score Mappings
