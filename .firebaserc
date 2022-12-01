@@ -1,4 +1,13 @@
 {
+  "targets": {
+    "myfairlady-ec6a3": {
+      "hosting": {
+        "sprint-effort-calculator": [
+          "myfairlady-ec6a3"
+        ]
+      }
+    }
+  },
   "projects": {
     "default": "myfairlady-ec6a3"
   }

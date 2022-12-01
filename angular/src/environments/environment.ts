@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebasePorts: {
+    functionsPort: firebaseConfig.emulators.functions.port,
+    firestorePort: firebaseConfig.emulators.firestore.port,
+    hostingPort: firebaseConfig.emulators.hosting.port,
+  }
 };
 
 /*

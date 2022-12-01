@@ -7,3 +7,9 @@ import * as functions from "firebase-functions";
 //   functions.logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+
+export const createRoom = functions.https.onRequest((request, response) => {
+  const {username} = request.body;
+
+  response.send(username);
+});

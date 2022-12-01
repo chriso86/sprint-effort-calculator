@@ -2,7 +2,8 @@
   "name": "sprint-tools",
   "version": "0.1.1",
   "scripts": {
-    "emulate": "npx firebase emulators:start"
+    "prepare": "cd angular && npm run build",
+    "emulate": "npm run prepare && npx firebase emulators:start"
   },
   "devDependencies": {
     "firebase-tools": "^11.16.1"

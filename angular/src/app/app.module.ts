@@ -15,6 +15,9 @@ import {AppState} from "./core/app.state";
 import {TeamListComponent} from './team-list/team-list.component';
 import {TeamMemberComponent} from './team-list/team-member/team-member.component';
 import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings.component';
+import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import {provideFirestore, getFirestore, connectFirestoreEmulator} from '@angular/fire/firestore';
+import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
 
 @NgModule({
   declarations: [
@@ -35,6 +38,25 @@ import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings
     SharedModule,
     NgxsModule.forRoot([AppState], {
       developmentMode: !environment.production
+    }),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+
+      if (!environment.production) {
+        connectFirestoreEmulator(firestore, 'localhost', environment.firebasePorts.firestorePort);
+      }
+
+      return firestore;
+    }),
+    provideFunctions(() => {
+      const functions = getFunctions();
+
+      if (!environment.production) {
+        connectFunctionsEmulator(functions, 'localhost', environment.firebasePorts.functionsPort);
+      }
+
+      return functions;
     })
   ],
   providers: [],
