@@ -1,7 +1,7 @@
 import {Action, Selector, State, StateContext} from "@ngxs/store";
 import {Injectable} from "@angular/core";
-import {UpdateEffort, UpdateSettings, UpdateWeightings} from "./app.actions";
-import {IAppSettings} from "./app-settings.interface";
+import {CreateRoom, ToggleAdvancedSettings, UpdateEffort, UpdateSettings, UpdateWeightings} from "./app.actions";
+import {IAppSettings, IEffort, IWeightings} from "./app-settings.interface";
 import {LocalStorageHelper} from "./local-storage.helper";
 import {
   DEFAULT_COMPLEXITY_WEIGHTING, DEFAULT_HIGHEST_EFFORT, DEFAULT_LOWEST_EFFORT,
@@ -9,6 +9,7 @@ import {
   DEFAULT_UNCERTAINTY_WEIGHTING,
   DEFAULT_WORKLOAD_WEIGHTING
 } from "./defaults";
+import {getFibonacciNumbers} from "./fibonacci-helper";
 
 @State<IAppSettings>({
   name: 'app',
@@ -22,7 +23,9 @@ import {
     effort: {
       lowest: DEFAULT_LOWEST_EFFORT,
       highest: DEFAULT_HIGHEST_EFFORT
-    }
+    },
+    isAdvancedSettingsOpen: false,
+    fibonacciSequence: getFibonacciNumbers()
   }
 })
 @Injectable()
@@ -37,38 +40,65 @@ export class AppState {
     return state.effort;
   }
 
-  @Action(UpdateSettings)
-  public updateSettings(ctx: StateContext<IAppSettings>, { settings }: UpdateSettings): void {
-    ctx.patchState(settings);
+  @Selector()
+  public static fibonnaciSequence(state: IAppSettings) {
+    return state.fibonacciSequence;
+  }
 
-    this.updateSettingsInLocalStorage(settings);
+  @Action(UpdateSettings)
+  public updateSettings(ctx: StateContext<IAppSettings>, { weightings, effort }: UpdateSettings): void {
+    ctx.dispatch(new UpdateWeightings(weightings));
+    ctx.dispatch(new UpdateEffort(effort));
+
+    this.updateSettingsInLocalStorage(weightings, effort);
   }
 
   @Action(UpdateWeightings)
   public updateWeightings(ctx: StateContext<IAppSettings>, { weightings }: UpdateWeightings): void {
     const settings = {
-      effort: ctx.getState().effort,
+      ...ctx.getState(),
       weightings
     };
 
     ctx.patchState(settings);
 
-    this.updateSettingsInLocalStorage(settings);
+    this.updateSettingsInLocalStorage(
+      weightings,
+      ctx.getState().effort
+    );
   }
 
   @Action(UpdateEffort)
   public updateEffort(ctx: StateContext<IAppSettings>, { effort }: UpdateEffort): void {
     const settings = {
-      weightings: ctx.getState().weightings,
+      ...ctx.getState(),
       effort
     };
 
     ctx.patchState(settings);
 
-    this.updateSettingsInLocalStorage(settings);
+    this.updateSettingsInLocalStorage(
+      ctx.getState().weightings,
+      effort
+    );
   }
 
-  private updateSettingsInLocalStorage(settings: IAppSettings): void {
-    LocalStorageHelper.SetItem('settings', settings);
+  @Action(ToggleAdvancedSettings)
+  public toggleAdvancedSettings(ctx: StateContext<IAppSettings>, { state }: ToggleAdvancedSettings): void {
+    ctx.patchState({
+      isAdvancedSettingsOpen: state === 'open'
+    });
+  }
+
+  @Action(CreateRoom)
+  public createRoom(ctx: StateContext<IAppSettings>, { username, hideScores }: CreateRoom): void {
+
+  }
+
+  private updateSettingsInLocalStorage(weightings: IWeightings, effort: IEffort): void {
+    LocalStorageHelper.SetItem('settings', {
+      weightings,
+      effort
+    });
   }
 }

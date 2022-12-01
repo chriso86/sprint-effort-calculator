@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {IRadioOption} from "../shared/radio-button/radio-option";
 import {Actions, ofActionSuccessful, Select, Store} from "@ngxs/store";
-import {UpdateSettings} from "./core/app.actions";
+import {ToggleAdvancedSettings, UpdateSettings} from "./core/app.actions";
 import {IAppSettings, IEffort, IWeightings} from "./core/app-settings.interface";
 import {LocalStorageHelper} from "./core/local-storage.helper";
 import {Observable} from "rxjs";
@@ -19,31 +19,17 @@ export class AppComponent {
   public risk?: IRadioOption;
   public uncertainty?: IRadioOption;
   public score?: number;
-  public isAdvancedSettingsOpen = false;
-  public weightings!: IWeightings;
-  public effort!: IEffort;
   public scoreMappings?: Map<number, number> = new Map<number, number>();
   public version = version.version;
 
   @Select(AppState.weightings) weightings$!: Observable<IWeightings>;
   @Select(AppState.effort) effort$!: Observable<IEffort>;
 
-  private readonly fibonnaciSequence: number[] = [];
-
   constructor(
     private store: Store,
     private actions$: Actions
   ) {
     const savedSettings = LocalStorageHelper.GetItem<IAppSettings>('settings');
-
-    this.fibonnaciSequence = this.getFibonacciNumbers();
-
-    this.weightings$.subscribe((weightings: IWeightings) => {
-      this.weightings = weightings;
-    });
-    this.effort$.subscribe((effort: IEffort) => {
-      this.effort = effort;
-    });
 
     this.actions$
       .pipe(
@@ -54,33 +40,72 @@ export class AppComponent {
       })
 
     if (savedSettings) {
-      this.updateAppSettings(savedSettings);
+      const { weightings, effort } = savedSettings;
+
+      this.updateAppSettings(weightings, effort);
     }
   }
 
+  public get isAdvancedSettingsOpen(): boolean {
+    return this.store.selectSnapshot<IAppSettings>(s => s.app)?.isAdvancedSettingsOpen ?? false;
+  }
+
   public get calculatedComplexity(): number {
-    return +((this.complexity?.data ?? 0) * (this.weightings.complexity / 100)).toFixed(2);
+    const state = this.store.selectSnapshot<IAppSettings>(s => s.app);
+
+    return this.calculateWeightedValue(
+      this.complexity?.data ?? 0,
+      state.weightings.complexity
+    );
   }
 
   public get calculatedWorkload(): number {
-    return +((this.workload?.data ?? 0) * (this.weightings.workload / 100)).toFixed(2);
+    const state = this.store.selectSnapshot<IAppSettings>(s => s.app);
+
+    return this.calculateWeightedValue(
+      this.workload?.data ?? 0,
+      state.weightings.workload
+    );
   }
 
   public get calculatedRisk(): number {
-    return +((this.risk?.data ?? 0) * (this.weightings.risk / 100)).toFixed(2);
+    const state = this.store.selectSnapshot<IAppSettings>(s => s.app);
+
+    return this.calculateWeightedValue(
+      this.risk?.data ?? 0,
+      state.weightings.risk
+    );
   }
 
   public get calculatedUncertainty(): number {
-    return +((this.uncertainty?.data ?? 0) * (this.weightings.uncertainty / 100)).toFixed(2);
+    const state = this.store.selectSnapshot<IAppSettings>(s => s.app);
+
+    return this.calculateWeightedValue(
+      this.uncertainty?.data ?? 0,
+      state.weightings.uncertainty
+    );
   }
 
   public get totalWeightedPercentage(): number {
-    const weightings = this.weightings;
+    const state = this.store.selectSnapshot<IAppSettings>(s => s.app);
+    const weightings = state.weightings;
 
     return +((weightings.complexity * 0.01)
       + (weightings.workload * 0.01)
       + (weightings.risk * 0.01)
       + (weightings.uncertainty * 0.01)).toFixed(2);
+  }
+
+  public toggleAdvancedSettings(): void {
+    this.store.dispatch(new ToggleAdvancedSettings(
+      this.isAdvancedSettingsOpen
+        ? 'close'
+        : 'open'
+    ));
+  }
+
+  public closeAdvancedSettings(): void {
+    this.store.dispatch(new ToggleAdvancedSettings('close'));
   }
 
   public setComplexity(option: IRadioOption) {
@@ -103,22 +128,6 @@ export class AppComponent {
     this.updateScore();
   }
 
-  public setComplexityWeighting(event: Event) {
-    this.updateWeightings('complexity', (event.target as HTMLInputElement).value);
-  }
-
-  public setWorkloadWeighting(event: Event) {
-    this.updateWeightings('workload', (event.target as HTMLInputElement).value);
-  }
-
-  public setRiskWeighting(event: Event) {
-    this.updateWeightings('risk', (event.target as HTMLInputElement).value);
-  }
-
-  public setUncertaintyWeighting(event: Event) {
-    this.updateWeightings('uncertainty', (event.target as HTMLInputElement).value);
-  }
-
   public updateScore(): void {
     requestAnimationFrame(() => {
       if (this.totalWeightedPercentage !== 1) {
@@ -126,17 +135,18 @@ export class AppComponent {
       }
 
       if (this.complexity && this.workload && this.risk && this.uncertainty) {
+        const state = this.store.selectSnapshot<IAppSettings>(s => s.app);
         const complexityValue = this.calculatedComplexity;
         const workloadValue = this.calculatedWorkload;
         const riskValue = this.calculatedRisk;
         const uncertaintyValue = this.calculatedUncertainty;
         const score = complexityValue + workloadValue + riskValue + uncertaintyValue;
         const scoreDifference = score / 5;
-        const lowestScore = this.effort.lowest;
-        const highestScore = this.effort.highest;
-        const lowestScoreIndex = this.fibonnaciSequence.indexOf(lowestScore);
-        const highestScoreIndex = this.fibonnaciSequence.indexOf(highestScore);
-        const limitedSequence = this.fibonnaciSequence.slice(lowestScoreIndex, highestScoreIndex + 1); // Slice removes just before the last index
+        const lowestScore = state.effort.lowest;
+        const highestScore = state.effort.highest;
+        const lowestScoreIndex = state.fibonacciSequence.indexOf(lowestScore);
+        const highestScoreIndex = state.fibonacciSequence.indexOf(highestScore);
+        const limitedSequence = state.fibonacciSequence.slice(lowestScoreIndex, highestScoreIndex + 1); // Slice removes just before the last index
         const increment = 5 / limitedSequence.length; // We have 5 levels of measure
         let index = 0;
 
@@ -160,98 +170,11 @@ export class AppComponent {
     });
   }
 
-  public upLowestSprintStep() {
-    const currentFibonacciValue = this.effort.lowest;
-    const highestValue = this.fibonnaciSequence[this.fibonnaciSequence.length - 1];
-
-    if (currentFibonacciValue !== highestValue) {
-      const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) + 1];
-
-      if (nextValue < this.effort.highest) {
-        this.updateEffort('lowest', nextValue);
-      }
-    }
+  private updateAppSettings(weightings: IWeightings, effort: IEffort) {
+    this.store.dispatch(new UpdateSettings(weightings, effort));
   }
 
-  public downLowestSprintStep() {
-    const currentFibonacciValue = this.effort.lowest;
-    const lowestValue = this.fibonnaciSequence[0];
-
-    if (currentFibonacciValue !== lowestValue) {
-      const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) - 1];
-
-      this.updateEffort('lowest', nextValue);
-    }
-  }
-
-  public upHighestSprintStep() {
-    const currentFibonacciValue = this.effort.highest;
-    const highestValue = this.fibonnaciSequence[this.fibonnaciSequence.length - 1];
-
-    if (currentFibonacciValue !== highestValue) {
-      const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) + 1];
-
-      this.updateEffort('highest', nextValue);
-    }
-  }
-
-  public downHighestSprintStep() {
-    const currentFibonacciValue = this.effort.highest;
-    const lowestValue = this.fibonnaciSequence[0];
-
-    if (currentFibonacciValue !== lowestValue) {
-      const nextValue = this.fibonnaciSequence[this.fibonnaciSequence.indexOf(currentFibonacciValue) - 1];
-
-      if (nextValue > this.effort.lowest) {
-        this.updateEffort('highest', nextValue);
-      }
-    }
-  }
-
-  private getFibonacciNumbers() {
-    const numbers = [1, 1];
-    const upperCalculationLimit = 10; // Increment 100 times
-    let j = 1;
-
-    while (j <= upperCalculationLimit) {
-      numbers.push(numbers[j - 1] + numbers[j]);
-      j++;
-    }
-
-    numbers.shift(); // Remove the duplicate 1
-
-    return numbers;
-  }
-
-  private updateWeightings(key: keyof IWeightings, value: string | number) {
-    const weightings = this.weightings;
-    const effort = this.effort;
-    const settings: IAppSettings = {
-      weightings: {
-        ...weightings,
-        [key]: +value
-      },
-      effort
-    };
-
-    this.updateAppSettings(settings);
-  }
-
-  private updateEffort(key: keyof IEffort, value: string | number) {
-    const weightings = this.weightings;
-    const effort = this.effort;
-    const settings: IAppSettings = {
-      weightings,
-      effort: {
-        ...effort,
-        [key]: +value
-      }
-    };
-
-    this.updateAppSettings(settings);
-  }
-
-  private updateAppSettings(settings: IAppSettings) {
-    this.store.dispatch(new UpdateSettings(settings));
+  private calculateWeightedValue(value: number, weighting: number): number {
+    return +(value * (weighting / 100)).toFixed(2);
   }
 }

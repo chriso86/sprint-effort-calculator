@@ -1,0 +1,14 @@
+<button
+  fxLayout="row"
+  fxLayoutGap=".25em"
+  fxLayoutAlign="start center"
+  class="sec-button"
+  [ngClass]="{'sec-button--cta': type === 'cta'}">
+  <span *ngIf="icon" class="material-icons">
+    {{icon}}
+  </span>
+
+  <span *ngIf="text" class="sec-button__text" fxFlex="1 1 auto">
+    {{text}}
+  </span>
+</button>
