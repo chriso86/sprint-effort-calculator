@@ -14,10 +14,10 @@ import {environment} from "../environments/environment";
 import {AppState} from "./core/app.state";
 import {TeamListComponent} from './team-list/team-list.component';
 import {TeamMemberComponent} from './team-list/team-member/team-member.component';
-import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings.component';
-import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
-import {provideFirestore, getFirestore, connectFirestoreEmulator} from '@angular/fire/firestore';
-import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular/fire/functions';
+import {AdvancedSettingsComponent} from './advanced-settings/advanced-settings.component';
+import {initializeApp, provideFirebaseApp} from '@angular/fire/app';
+import {connectFirestoreEmulator, getFirestore, provideFirestore} from '@angular/fire/firestore';
+import {connectFunctionsEmulator, getFunctions, provideFunctions} from '@angular/fire/functions';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,9 @@ import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular
       const firestore = getFirestore();
 
       if (!environment.production) {
-        connectFirestoreEmulator(firestore, 'localhost', environment.firebasePorts.firestorePort);
+        const port = environment.firebasePorts.firestorePort as unknown as number;
+
+        connectFirestoreEmulator(firestore, 'localhost', port);
       }
 
       return firestore;
@@ -53,7 +55,9 @@ import {provideFunctions, getFunctions, connectFunctionsEmulator} from '@angular
       const functions = getFunctions();
 
       if (!environment.production) {
-        connectFunctionsEmulator(functions, 'localhost', environment.firebasePorts.functionsPort);
+        const port = environment.firebasePorts.functionsPort as unknown as number;
+
+        connectFunctionsEmulator(functions, 'localhost', port);
       }
 
       return functions;

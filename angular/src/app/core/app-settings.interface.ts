@@ -9,17 +9,10 @@ export interface IAppSettings {
 export interface IRoom {
   roomId: string;
   createdAt: Date;
-  members: string[];
-  workItems: IWorkItem[];
+  members: ITeamMember[];
 }
 
-export interface IWorkItem {
-  description: string;
-  notes: string[];
-  teamRatings: ITeamMemberEntry[];
-}
-
-export interface ITeamMemberEntry {
+export interface ITeamMember {
   username: string;
   complexity: number;
   workload: number;
