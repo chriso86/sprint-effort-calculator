@@ -2,10 +2,14 @@
   "name": "sprint-tools",
   "version": "0.1.1",
   "scripts": {
-    "prepare": "cd angular && npm run build",
-    "emulate": "npm run prepare && npx firebase emulators:start"
+    "prepare": "npm run prepare-angular && npm run prepare-functions",
+    "prepare-angular": "cd angular && npm run build",
+    "prepare-functions": "cd functions && npm run build",
+    "run-scripts": "node scripts/extract-emulator-ports.js",
+    "start": "npm run run-scripts && npm run prepare && npx firebase emulators:start"
   },
   "devDependencies": {
+    "@types/node": "^18.11.10",
     "firebase-tools": "^11.16.1"
   }
 }
